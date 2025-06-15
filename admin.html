@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Payment Confirmation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+ <style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(-45deg, #ff6ec4, #7873f5, #3bf0e4, #ffd86f);
+  background-size: 400% 400%;
+  animation: gradientBG 12s ease infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: #333;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.admin-main {
+  display: flex;
+  flex-wrap: wrap; /* allows wrapping on small screens */
+  gap: 24px;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.payments-list-box,
+.buyer-confirmations-box {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(120, 115, 245, 0.12), 0 2px 8px rgba(0,0,0,0.04);
+  padding: 20px;
+  flex: 1 1 400px;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow: hidden;
+}
+
+.payments-list-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #222;
+}
+
+.payments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  max-height: 600px;
+  padding-right: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #bdbdbd #f8f8ff;
+}
+
+.payments-list::-webkit-scrollbar {
+  width: 6px;
+  background: #f8f8ff;
+  border-radius: 8px;
+}
+.payments-list::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+  border-radius: 8px;
+}
+
+.payment-card,
+.buyer-confirmation-card {
+  background: linear-gradient(90deg, #f8f8ff 80%, #e3f0ff 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(120, 115, 245, 0.10);
+  border: 1px solid #e0e0e0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.payment-card .info-row,
+.buyer-confirmation-card .info-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.95rem;
+}
+
+.payment-card .info-row > div {
+  min-width: 140px;
+}
+
+.payment-card .status {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.payment-card .status.confirmed { color: #388e3c; }
+.payment-card .status.submitted { color: #ff9800; }
+.payment-card .status.pending { color: #e53935; }
+
+.payment-card .confirm-btn,
+.reject-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.payment-card .confirm-btn {
+  background: #4caf50;
+  color: white;
+}
+.payment-card .confirm-btn:hover { background: #388e3c; }
+
+.reject-btn {
+  background: #e53935;
+  color: white;
+}
+.reject-btn:hover { background: #b71c1c; }
+
+.buyer-confirmation-card {
+  background: #f8f8ff;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.buyer-confirmation-card h4 {
+  margin-bottom: 4px;
+  color: #333;
+  font-size: 1rem;
+}
+
+.buyer-confirmation-card p {
+  margin: 2px 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Form and auth box */
+#authBox input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  flex: 1;
+}
+#authBox button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+#authBox button:hover {
+  background: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .admin-main {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .payments-list-box,
+  .buyer-confirmations-box {
+    max-width: 100%;
+  }
+
+  .payments-list,
+  .buyer-confirmations-box {
+    max-height: 500px;
+  }
+
+  .payment-card .info-row {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .payments-list-title {
+    font-size: 1.4rem;
+  }
+  .payment-card .confirm-btn,
+  .reject-btn {
+    width: 100%;
+    margin-top: 6px;
+  }
+}
+</style>
+
+</head>
+<body>
+
+  
+<div class="admin-main">
+  <!-- Seller Payments Section (Left) -->
+  <div class="payments-list-box">
+    <h3 class="payments-list-title">Seller Payments</h3>
+    <div id="authBox" style="margin-bottom:32px;">
+      <input id="adminEmail" type="email" placeholder="Admin Email" style="padding:8px; border-radius:6px; border:1px solid #ccc; margin-right:8px;">
+      <input id="adminPass" type="password" placeholder="Password" style="padding:8px; border-radius:6px; border:1px solid #ccc; margin-right:8px;">
+      <button id="adminLoginBtn" style="padding:8px 18px; border-radius:6px; background:#007bff; color:#fff; border:none;">Login</button>
+      <span id="authStatus" style="margin-left:16px; color:#388e3c; font-weight:600;"></span>
+    </div>
+    <div id="paymentsList" class="payments-list"></div>
+  </div>
+
+  <!-- Buyer Confirmations Section (Right) -->
+  <div class="buyer-confirmations-box">
+    <h3 class="payments-list-title">Buyer Confirmations</h3>
+    <div id="buyerConfirmationsList" class="payments-list"></div>
+  </div>
+</div>
+
+<script type="module">
+  import { firebaseConfig } from './firebase-config.js';
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  update,
+  remove,
+  set
+} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+import { firebaseConfig } from './firebase-config.js';
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+let currentUser = null;
+
+// Auth UI logic
+const adminLoginBtn = document.getElementById('adminLoginBtn');
+const adminEmail = document.getElementById('adminEmail');
+const adminPass = document.getElementById('adminPass');
+const authStatus = document.getElementById('authStatus');
+
+adminLoginBtn.onclick = async () => {
+  try {
+    await signInWithEmailAndPassword(auth, adminEmail.value, adminPass.value);
+    authStatus.textContent = "Logged in!";
+    authStatus.style.color = "#388e3c";
+  } catch (e) {
+    authStatus.textContent = "Login failed";
+    authStatus.style.color = "#e53935";
+  }
+};
+
+// Save product to cart with buyer name & email
+export async function saveProductToCart(productId, productData) {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Please login first!");
+    return;
+  }
+
+  const buyerName = user.displayName || "Unknown";
+  const buyerEmail = user.email || "No Email";
+
+  // Save product data along with buyer's name & email
+  await set(ref(db, `carts/${user.uid}/${productId}`), {
+    ...productData,
+    buyer_name: buyerName,
+    buyer_email: buyerEmail,
+    buyerConfirmed: false // default false
+  });
+
+  alert("Product added to cart!");
+}
+
+// Load buyer confirmations
+function renderBuyerConfirmations() {
+  const buyerList = document.getElementById("buyerConfirmationsList");
+  buyerList.innerHTML = "<i>Loading buyer confirmations...</i>";
+
+  onValue(ref(db, 'carts'), snap => {
+    buyerList.innerHTML = "";
+    let found = false;
+
+    snap.forEach(userSnap => {
+      const userCart = userSnap.val();
+
+      Object.entries(userCart).forEach(([productId, product]) => {
+        found = true;
+        const confirmed = product.buyerConfirmed ? "✅ Confirmed" : "❌ Not Confirmed";
+        const confirmedColor = product.buyerConfirmed ? "#388e3c" : "#e53935";
+
+        buyerList.innerHTML += `
+          <div class="buyer-confirmation-card">
+            <h4>${product.product_name || "No Name"}</h4>
+            <p><strong>Buyer Name:</strong> ${product.buyer_name || "Unknown"}</p>
+            <p><strong>Buyer Email:</strong> ${product.buyer_email || "No Email"}</p>
+            <p><strong>Price:</strong> ₹${product.price}</p>
+            <p><strong>Category:</strong> ${product.category || '-'}</p>
+            <p><strong>Status:</strong> <span style="color:${confirmedColor}; font-weight:600;">${confirmed}</span></p>
+          </div>
+        `;
+      });
+    });
+
+    if (!found) {
+      buyerList.innerHTML = "<i>No buyer confirmations yet.</i>";
+    }
+  });
+}
+renderBuyerConfirmations();
+
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  if (user) {
+    adminEmail.style.display = "none";
+    adminPass.style.display = "none";
+    adminLoginBtn.textContent = "Logout";
+    adminLoginBtn.onclick = () => signOut(auth);
+    authStatus.textContent = "Logged in!";
+    authStatus.style.color = "#388e3c";
+    document.getElementById("paymentsList").style.display = "";
+  } else {
+    adminEmail.style.display = "";
+    adminPass.style.display = "";
+    adminLoginBtn.textContent = "Login";
+    adminLoginBtn.onclick = async () => {
+      try {
+        await signInWithEmailAndPassword(auth, adminEmail.value, adminPass.value);
+        authStatus.textContent = "Logged in!";
+        authStatus.style.color = "#388e3c";
+      } catch (e) {
+        authStatus.textContent = "Login failed";
+        authStatus.style.color = "#e53935";
+      }
+    };
+    authStatus.textContent = "";
+    document.getElementById("paymentsList").style.display = "none";
+  }
+});
+
+// Load seller payments
+function renderPayments() {
+  onValue(ref(db, 'seller_payments'), snap => {
+    const paymentsList = document.getElementById("paymentsList");
+    paymentsList.innerHTML = '';
+    let found = false;
+
+    snap.forEach(child => {
+      const val = child.val();
+      const key = child.key;
+      found = true;
+
+      paymentsList.innerHTML += `
+        <div class="payment-card">
+          <div class="info-row">
+            <div><b>Seller Name:</b> ${val.seller_name || '-'}</div>
+            <div><b>Email:</b> ${val.submitted_by || val.user_email || '-'}</div>
+            <div><b>Mobile:</b> ${val.seller_mobile || '-'}</div>
+            <div><b>UPI Ref:</b> ${val.upi_ref || '-'}</div>
+            <div class="screenshot-link"><b>Screenshot:</b> ${val.screenshot_url ? `<a href="${val.screenshot_url}" target="_blank">View</a>` : 'N/A'}</div>
+          </div>
+          ${val.status !== 'confirmed' ? `
+            <div style="display:flex; gap:12px; margin-top:10px;">
+              <button class="confirm-btn" data-key="${key}">Confirm Payment</button>
+              <button class="reject-btn" data-key="${key}">Reject & Delete</button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    });
+
+    if (!found) paymentsList.innerHTML = "<i>No seller payments found.</i>";
+
+    document.querySelectorAll('.confirm-btn').forEach(btn => {
+      btn.addEventListener('click', async function() {
+        if (!currentUser) {
+          alert('You must be logged in as admin to confirm payments.');
+          return;
+        }
+        const key = this.getAttribute('data-key');
+        try {
+          await update(ref(db, `seller_payments/${key}`), { status: 'confirmed' });
+          alert('Payment confirmed!');
+        } catch (e) {
+          alert('Error confirming payment:\n' + (e.message || e));
+        }
+      });
+    });
+
+    document.querySelectorAll('.reject-btn').forEach(btn => {
+      btn.addEventListener('click', async function() {
+        if (!currentUser) {
+          alert('You must be logged in as admin to reject payments.');
+          return;
+        }
+        const key = this.getAttribute('data-key');
+        if (confirm('Are you sure you want to reject and delete this payment?')) {
+          try {
+            await remove(ref(db, `seller_payments/${key}`));
+            alert('Payment rejected and deleted!');
+          } catch (e) {
+            alert('Error deleting payment:\n' + (e.message || e));
+          }
+        }
+      });
+    });
+  });
+}
+renderPayments();
+</script>
+
+</body>
+</html>
